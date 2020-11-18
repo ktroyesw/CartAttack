@@ -3,8 +3,10 @@ const c = canvas.getContext('2d');
 const scoreElement = document.getElementById("score")
 const startGameBtn = document.getElementById("startGameBtn")
 const startGameModal = document.getElementById("startGameModal")
+const restartGameBtn = document.getElementById("restartGameBtn")
 const endGameModal = document.getElementById("endGameModal")
 const finalScore = document.getElementById("finalScore")
+const messageText = document.getElementById("messageText")
 
 const imgBackground = new Image(0,0)
 imgBackground.src = './TarteBackground2.png'
@@ -48,6 +50,8 @@ canvas.height = innerHeight
 
 let music;
 
+endGameModal.style.display = 'none';
+
 // class Player {
 //     constructor(x, y, radius, color) {
 //         this.x = x
@@ -71,8 +75,19 @@ class Player {
         this.size = size
         this.topLeftX = this.centerX - (this.size / 2)
         this.topLeftY = this.centerY - (this.size / 2)
-        this.shinkFactor = 0
+        this.shrinkFactor = 0
         this.velocity = velocity
+    }
+
+    init()
+    {
+        this.centerX = canvas.width / 2
+        this.centerY = canvas.height / 2
+        this.topLeftX = this.centerX - (this.size / 2)
+        this.topLeftY = this.centerY - (this.size / 2)
+        this.velocity = {x:1, y:0}
+        this.shrinkFactor = 0
+        this.size = 100
     }
 
     draw() {
@@ -80,6 +95,10 @@ class Player {
             this.size -= this.shrinkFactor
             this.topLeftX = this.centerX - (this.size / 2)
             this.topLeftY = this.centerY - (this.size / 2)
+        }
+
+        if (this.size <= 0) {
+            endGame(false)                
         }
 
         c.drawImage(this.velocity.x >= 0 ? imgTrolleyRight : imgTrolleyLeft, this.topLeftX, this.topLeftY, this.size, this.size);  
@@ -437,7 +456,7 @@ const particles = []
 
 let animationId
 let score = 0
-let endGame = true
+
 
 function animate() {
     animationId = requestAnimationFrame(animate)
@@ -490,19 +509,13 @@ function animateEnemies() {
         // End Game
         if (enemy.detectCollision(player.centerX, player.centerY, player.size)  ) {
 
-            if (!endGame) {
+           
                 explosionSound  = new sound("./Explosion2.mp3")
                 explosionSound.play()
                 createExplosion(player.centerX, player.centerY,'red', 50)  
                 player.startShrink(5)
-            }
-
-            endGame = true
-
-            if (particles.length == 0) {
-                endGameModal.style.display = 'flex'
-                finalScore.innerHTML = score
-            }
+           
+           
 
         }
 
@@ -516,9 +529,6 @@ function animateEnemies() {
                 }, 0);
 
                 if(enemy.strength <= 0) {
-                    score+=100    
-                    scoreElement.innerHTML = score
-
                     var explosionSound = new sound("./Explosion1.mp3")
                     explosionSound.play()
                     createExplosion(projectile.x, projectile.y,'white', 10)
@@ -549,9 +559,13 @@ function animateGoodies() {
             if (goodie.size <= 0) {
                 setTimeout(() => {
                     goodies.splice(goodieIndex, 1)
-                    score+=100    
+                    score += 1   
                     scoreElement.innerHTML = score
                 }, 0);
+            }
+            if(score>= 5)
+            {
+                endGame(true)
             }
         }
 
@@ -597,17 +611,6 @@ function createExplosion (x, y, color, particleCount){
     }    
 }
 
-// Main Start
-
-const x = canvas.width / 2;
-const y = canvas.height / 2;
-
-let velocity = {x:1, y:0}
-
-const player = new Player(x, y, velocity, 100)
-player.update()
-
-c.drawImage(imgBackground,0,0)
 
 addEventListener('click', (event) => {
 
@@ -632,14 +635,51 @@ addEventListener('click', (event) => {
 })
 
 startGameBtn.addEventListener('click', () => {
-    endGame = false
-    music = new sound("./music.mp3", true);    
-    music.play()  
-    animate()
-    spawnEnemy()
-    spawnGoodie()
-    startGameModal.style.display = 'none'
+    startGame();
 })
+restartGameBtn.addEventListener('click', () => {
+    startGame();
+})
+
+    // Main Start
+    player = new Player(0, 0, {x:1, y:0}, 100)
+    player.update()
+    c.drawImage(imgBackground,0,0)
+
+function startGame(){
+    projectiles.length = 0;
+    enemies.length = 0;
+    goodies.length = 0;
+    particles.length = 0;
+    score = 0
+    
+    player.init()
+
+    music = new sound("./music.mp3", true);    
+    music.play();  
+    animate();
+    spawnEnemy();
+    spawnGoodie();
+    startGameModal.style.display = 'none';
+    endGameModal.style.display = 'none';
+
+    
+    player.update()
+   
+    c.drawImage(imgBackground,0,0)
+}
+
+function endGame(success){
+    cancelAnimationFrame(animationId)    
+    endGameModal.style.display = 'flex'
+    finalScore.innerHTML = score
+    if(success)
+      messageText.innerHTML = "CONGRATULATIONS! You have earned a 10% discount for your next purchase! Promo code: WIN2020"
+    else
+    {
+      messageText.innerHTML = "Sorry, you did not win this time!"
+    }
+}
 
 addEventListener('keydown', (e) => {
     if (e.keyCode && e.keyCode == 37) {player.setVelocity(-1, 0) }
