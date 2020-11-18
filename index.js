@@ -6,6 +6,9 @@ const startGameModal = document.getElementById("startGameModal")
 const endGameModal = document.getElementById("endGameModal")
 const finalScore = document.getElementById("finalScore")
 
+const imgBackground = new Image(0,0)
+imgBackground.src = './TarteBackground2.png'
+
 const imgEnemy1 = new Image(10,10)
 imgEnemy1.src = 'BrandX-1.png'
 
@@ -16,25 +19,25 @@ const imgEnemy3 = new Image()
 imgEnemy3.src = 'BrandX-3.png'
 
 const imgTrolleyLeft = new Image(50,50)
-imgTrolleyLeft.src = 'TrolleyLeft.png'
+imgTrolleyLeft.src = 'Basket3.png'
 
 const imgTrolleyRight = new Image(50,50)
-imgTrolleyRight.src = 'TrolleyRight.png'
+imgTrolleyRight.src = 'Basket3.png'
 
 const imgGoodie1 = new Image(10,10)
-imgGoodie1.src = 'Max1.png'
+imgGoodie1.src = 'tarte01.png'
 
 const imgGoodie3 = new Image(10,10)
-imgGoodie3.src = 'Max3.png'
+imgGoodie3.src = 'tarte02.png'
 
 const imgGoodie4 = new Image(10,10)
-imgGoodie4.src = 'Max4.png'
+imgGoodie4.src = 'tarte03.png'
 
 const imgGoodie5 = new Image(10,10)
-imgGoodie5.src = 'Max5.png'
+imgGoodie5.src = 'tarte04.png'
 
 const imgGoodie6 = new Image(10,10)
-imgGoodie6.src = 'Max6.png'
+imgGoodie6.src = 'tarte05.png'
 
 const imgGoodie7 = new Image(10,10)
 imgGoodie7.src = 'Esw.png'
@@ -307,7 +310,7 @@ class Goodie {
 function spawnEnemy(){
 
         setInterval(() => {
-            if (enemies.length  < 6) {
+            if (enemies.length  < 4) {
 
                 const radius = 23
                 let x 
@@ -424,7 +427,7 @@ function spawnGoodie(){
 
         }
 
-    }, 5000);
+    }, 1000);
 }
 
 const projectiles = []
@@ -438,8 +441,12 @@ let endGame = true
 
 function animate() {
     animationId = requestAnimationFrame(animate)
-    c.fillStyle = 'rgb(0, 0, 0, 0.1)'
-    c.fillRect(0, 0, canvas.width, canvas.height)
+
+    c.drawImage(imgBackground,0,0,canvas.width,canvas.height)
+
+    // c.fillStyle = 'rgb(0, 0, 0)'
+    // c.fillRect(0, 0, canvas.width, canvas.height)
+
     
     player.update()
 
@@ -600,6 +607,8 @@ let velocity = {x:1, y:0}
 const player = new Player(x, y, velocity, 100)
 player.update()
 
+c.drawImage(imgBackground,0,0)
+
 addEventListener('click', (event) => {
 
     if (endGame) return
@@ -618,7 +627,7 @@ addEventListener('click', (event) => {
         player.centerX, 
         player.centerY, 
         5, 
-        'white', 
+        'red', 
         velocity))
 })
 
