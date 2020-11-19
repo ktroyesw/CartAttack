@@ -303,6 +303,7 @@ class Goodie {
         this.topLeftX = this.centerX - (this.width / 2)
         this.topLeftY = this.centerY - (this.height / 2)        
         this.shrink = 0
+        this.scored = false
         this.outOfPlay = false
 
         this.shrinkX = this.width < this.height ? 1 : this.height / this.width
@@ -311,6 +312,7 @@ class Goodie {
 
     draw() {
             c.drawImage(this.img, this.centerX, this.centerY, this.width, this.height);  
+            
     }
 
     startShrink(shrinkFactor = 2)     {
@@ -329,10 +331,19 @@ class Goodie {
             this.height -= (this.shrink * this.shrinkY)
         }  
         
+        if (this.scored == false && (this.width <= 0 || this.height <= 0))
+        {
+            score += 1   
+            scoreElement.innerHTML = score
+            this.scored = true
+        }
+
         if ((this.velocity.x > 0 && this.topLeftX > canvas.width + 50) ||
             (this.velocity.x < 0 && this.topLeftX + this.width < -50) ||
             (this.velocity.y > 0 && this.topLeftY > canvas.height + 50) ||
-            (this.velocity.y < 0 && this.topLeftY + this.height < -50)) this.outOfPlay = true
+            (this.velocity.y < 0 && this.topLeftY + this.height < -50)) this.outOfPlay = true       
+            
+        
     }
 
     between(n,x,y) {return n >= x && n <= y;}
@@ -510,6 +521,11 @@ function animate() {
 
     animateEnemies()
     animateGoodies()
+
+    if(score>= 5)
+            {
+                endGame(true)
+            }
 }
 
 function animateEnemies() {
@@ -573,19 +589,15 @@ function animateGoodies() {
         {
             var addToTrolleySound = new sound(addToBasketSound)
             addToTrolleySound.play()
+                        
             goodie.startShrink()
             if (goodie.width <= 0 && goodie.height <= 0) {
                 setTimeout(() => {
                     goodies.splice(goodieIndex, 1)                    
                 }, 0);                
             }
-            score += 1   
-            scoreElement.innerHTML = score
+                       
             
-            if(score>= 5)
-            {
-                endGame(true)
-            }
         }
     });
 }
@@ -657,6 +669,7 @@ function startGame(){
     goodies.length = 0;
     particles.length = 0;
     score = 0
+    scoreElement.innerHTML = score    
     
     player.init(0, 0, {x:1, y:0}, playerSettings)
 
