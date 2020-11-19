@@ -9,81 +9,77 @@ const finalScore = document.getElementById("finalScore")
 const imgBackground = new Image(0,0)
 imgBackground.src = './TarteBackground2.png'
 
-const imgEnemy1 = new Image(10,10)
-imgEnemy1.src = 'BrandX-1.png'
+// Sounds
+const playerExplosionSound  = "./Explosion2.mp3" // Player Expoded
+const enemyExplosionSound  = "./Explosion1.mp3" // Enemy Expoded
+const addToBasketSound = "./AddToTrolley.mp3" // Goodie in Basket
+const playerFireSound =  "./Fire2.mp3" // Player Fires Weapon
+const backgroundMusicSound = "./music.mp3" // Background Music
+
+// Player Setup
+const imgPlayer = new Image()
+imgPlayer.src = 'Basket3.png'
+const playerSettings = {image:imgPlayer, width:100, height:100}
+
+
+// Enemy Setup
+const imgEnemy1 = new Image()
+imgEnemy1.src = 'Monster01.png'
 
 const imgEnemy2 = new Image()
-imgEnemy2.src = 'BrandX-2.png'
+imgEnemy2.src = 'Monster02.png'
 
 const imgEnemy3 = new Image()
-imgEnemy3.src = 'BrandX-3.png'
+imgEnemy3.src = 'Monster03.png'
 
-const imgTrolleyLeft = new Image(50,50)
-imgTrolleyLeft.src = 'Basket3.png'
+const enemy1 = { image:imgEnemy1, width:50, height:50 }
+const enemy2 = { image:imgEnemy2, width:50, height:50 } 
+const enemy3 = { image:imgEnemy3, width:50, height:50 }
 
-const imgTrolleyRight = new Image(50,50)
-imgTrolleyRight.src = 'Basket3.png'
 
-const imgGoodie1 = new Image(10,10)
-imgGoodie1.src = 'tarte01.png'
+// Goodie Setup
+const imgGoodie1 = new Image()
+imgGoodie1.src = 'TarteFaceTape.png'
 
-const imgGoodie3 = new Image(10,10)
-imgGoodie3.src = 'tarte02.png'
+const imgGoodie2 = new Image()
+imgGoodie2.src = 'TarteTool.png'
 
-const imgGoodie4 = new Image(10,10)
-imgGoodie4.src = 'tarte03.png'
+const imgGoodie3 = new Image()
+imgGoodie3.src = 'TarteStaySpray.png'
 
-const imgGoodie5 = new Image(10,10)
-imgGoodie5.src = 'tarte04.png'
 
-const imgGoodie6 = new Image(10,10)
-imgGoodie6.src = 'tarte05.png'
-
-const imgGoodie7 = new Image(10,10)
-imgGoodie7.src = 'Esw.png'
-
+const goodie1 = { image:imgGoodie1, width:50, height:150 }
+const goodie2 = { image:imgGoodie2, width:80, height:80 }
+const goodie3 = { image:imgGoodie3, width:40, height:150 }
 
 canvas.width = innerWidth
 canvas.height = innerHeight
 
 let music;
 
-// class Player {
-//     constructor(x, y, radius, color) {
-//         this.x = x
-//         this.y = y
-//         this.radius = radius
-//         this.color = color
-//     }
-
-//     // draw() {
-//     //     c.beginPath()
-//     //     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
-//     //     c.fillStyle = this.color
-//     //     c.fill();
-//     // }
-// }
-
 class Player {
-    constructor(centerX, centerY, velocity, size) {
+    constructor(centerX, centerY, velocity, player) {
         this.centerX = centerX
         this.centerY = centerY
-        this.size = size
-        this.topLeftX = this.centerX - (this.size / 2)
-        this.topLeftY = this.centerY - (this.size / 2)
-        this.shinkFactor = 0
         this.velocity = velocity
+        this.width = player.width
+        this.height = player.height
+        this.image = player.image
+
+        this.topLeftX = this.centerX - (this.width / 2)
+        this.topLeftY = this.centerY - (this.height / 2)
+        this.shinkFactor = 0
     }
 
     draw() {
-        if (this.size > 0 && this.shrinkFactor > 0) {
-            this.size -= this.shrinkFactor
-            this.topLeftX = this.centerX - (this.size / 2)
-            this.topLeftY = this.centerY - (this.size / 2)
+        if ((this.width > 0 || this.height > 0) && this.shrinkFactor > 0) {
+            this.width -= this.shrinkFactor
+            this.height -= this.shrinkFactor
+            this.topLeftX = this.centerX - (this.width / 2)
+            this.topLeftY = this.centerY - (this.height / 2)
         }
 
-        c.drawImage(this.velocity.x >= 0 ? imgTrolleyRight : imgTrolleyLeft, this.topLeftX, this.topLeftY, this.size, this.size);  
-            
+        c.drawImage(this.image, this.topLeftX, this.topLeftY, this.width, this.height);              
     }
 
     startShrink(shrinkFactor = 2)     {
@@ -91,43 +87,39 @@ class Player {
     }
 
     detectCollision(x, y) {
-        return x >= this.topLeftX && x <= this.topLeftX + this.size &&
-               y >= this.topLeftY && y <= this.topLeftY + this.size 
+        return x >= this.topLeftX && x <= this.topLeftX + this.width &&
+               y >= this.topLeftY && y <= this.topLeftY + this.height 
     }
 
     update() {
-
-        console.log(this.velocity.x)
-        console.log(this.velocity.y)
 
         this.draw()
         this.centerX += this.velocity.x
         this.centerY += this.velocity.y
 
-        if (this.centerX - (this.size / 2) <= 0) { 
-            this.centerX = this.size / 2
+        if (this.centerX - (this.width / 2) <= 0) { 
+            this.centerX = this.width / 2
             this.velocity.x = 0
         }
 
-        if (this.centerY - (this.size / 2) <= 0) {
-            this.centerY = this.size / 2
+        if (this.centerY - (this.height / 2) <= 0) {
+            this.centerY = this.height / 2
             this.velocity.y = 0
         }
 
-        if (this.centerX + (this.size / 2) >= canvas.width) {
-            this.centerX = canvas.width - (this.size / 2)
+        if (this.centerX + (this.width / 2) >= canvas.width) {
+            this.centerX = canvas.width - (this.width / 2)
             this.velocity.x = 0
         }
 
-        if (this.centerY + (this.size / 2) >= canvas.height) {
-            this.centerY = canvas.height - (this.size / 2)
+        if (this.centerY + (this.height / 2) >= canvas.height) {
+            this.centerY = canvas.height - (this.height / 2)
             this.velocity.y = 0
         }
 
-        this.topLeftX = this.centerX - (this.size / 2)
-        this.topLeftY = this.centerY - (this.size / 2)        
+        this.topLeftX = this.centerX - (this.width / 2)
+        this.topLeftY = this.centerY - (this.height / 2)        
     }
-
 
     setVelocity(x, y) {
         this.velocity.x += x
@@ -150,6 +142,7 @@ class Projectile {
         this.radius = radius
         this.color = color
         this.velocity = velocity
+        this.outOfPlay = false
     }
 
     draw() {
@@ -163,6 +156,11 @@ class Projectile {
         this.draw()
         this.x = this.x + this.velocity.x
         this.y = this.y + this.velocity.y
+
+        if ((this.velocity.x > 0 && this.x > canvas.width + 50) ||
+            (this.velocity.x < 0 && this.x < -50) ||
+            (this.velocity.y > 0 && this.y > canvas.height + 50) ||
+            (this.velocity.y < 0 && this.y < -50)) this.outOfPlay = true
     }
 }
 
@@ -201,93 +199,101 @@ class Particle {
 }
 
 class Enemy {
-    constructor(centerX, centerY,  velocity, strength, img) {
+    constructor(centerX, centerY,  velocity, strength, enemy) {
         this.centerX = centerX
         this.centerY = centerY
         this.velocity = velocity
         this.strength = strength
-        this.img = img
-        this.size = 46
-        this.topLeftX = this.centerX - (this.size / 2)
-        this.topLeftY = this.centerY - (this.size / 2)
+        this.img = enemy.image
+        this.height = enemy.height
+        this.width = enemy.width
+        
+        this.topLeftX = this.centerX - (this.with / 2)
+        this.topLeftY = this.centerY - (this.height / 2)
         this.hasBeenVisible = false
-        this.canBeDeleted = false        
+        this.canBeDeleted = false
+        this.shrinkFactor = 0      
+        this.outOfPlay = false  
     }
 
     draw() {
-            c.drawImage(this.img, this.topLeftX, this.topLeftY, this.size, this.size);  
-            c.font = "15pt Calibri";
-            if (this.strength > 1)
-                c.fillText(this.strength, this.centerX, this.topLeftY);
+
+            if ((this.width > 0 || this.height > 0) && this.shrinkFactor > 0) {
+                this.width -= this.shrinkFactor
+                this.height -= this.shrinkFactor
+                this.topLeftX = this.centerX - (this.width / 2)
+                this.topLeftY = this.centerY - (this.height / 2)
+            }   
+
+            c.drawImage(this.img, this.topLeftX, this.topLeftY, this.width, this.height);  
     }
 
     detectCollision(x, y) {
-        return x >= this.topLeftX && x <= this.topLeftX + this.size &&
-               y >= this.topLeftY && y <= this.topLeftY + this.size 
+        return x >= this.topLeftX && x <= this.topLeftX + this.width &&
+               y >= this.topLeftY && y <= this.topLeftY + this.height 
 
     }
 
     between(n,x,y) {return n >= x && n <= y;}
 
-    detectCollision(x, y, size) {
-        let otherTop = y - (size / 2)
-        let otherBottom = y + (size / 2)
-        let otherLeft = x - (size / 2)
-        let otherRight = x + (size / 2)
+    detectCollision(x, y, w, h) {
+        let otherTop = y - (h / 2)
+        let otherBottom = y + (h / 2)
+        let otherLeft = x - (w / 2)
+        let otherRight = x + (w / 2)
         
         let thisTop = this.topLeftY
-        let thisBottom = this.topLeftY + this.size
+        let thisBottom = this.topLeftY + this.height
         let thisLeft = this.topLeftX
-        let thisRight = this.topLeftX + this.size
+        let thisRight = this.topLeftX + this.width
 
-        return  ((this.between(otherTop, thisTop, thisBottom) || this.between(otherBottom,thisTop, thisBottom)) &&
-                (this.between(otherLeft, thisLeft, thisRight) || this.between(otherRight,thisLeft, thisRight))) ||
+        return  this.strength > 0 &&
                 (
+                    ((this.between(otherTop, thisTop, thisBottom) || this.between(otherBottom,thisTop, thisBottom)) &&
+                    (this.between(otherLeft, thisLeft, thisRight) || this.between(otherRight,thisLeft, thisRight))) ||                    
                     ((this.between(thisTop, otherTop, otherBottom) || this.between(thisBottom,otherTop, otherBottom)) &&
                     (this.between(thisLeft, otherLeft, otherRight) || this.between(thisRight,otherLeft, otherRight)))
                 )
+    }
 
+    startShrink(shrinkFactor = 2)     {
+        this.shrinkFactor = shrinkFactor;
     }
 
     update() {
         this.draw()
         this.centerX += this.velocity.x
         this.centerY += this.velocity.y
-        this.topLeftX = this.centerX - (this.size / 2)
-        this.topLeftY = this.centerY - (this.size / 2)
+        this.topLeftX = this.centerX - (this.width / 2)
+        this.topLeftY = this.centerY - (this.height / 2)
         
-        // Check that item has appeared in the play area
-        if (this.topLeftX > 0 || 
-            this.topLeftY > 0 || 
-            this.topLeftX + this.size < canvas.width || 
-            this.topLeftY + this.size < canvas.height) {
-                this.hasBeenVisible = true
-            }
-
-        // If it has appeared in the play area, and now out of bounds - delete it.    
-        if (this.topLeftX + this.size < 0 || 
-            this.topLeftY + this.size < 0 ||
-            this.topLeftX > canvas.width || 
-            this.topLeftY > canvas.height) {
-                if (this.hasBeenVisible) this.canBeDeleted = true;
-            }
+        if ((this.velocity.x > 0 && this.topLeftX > canvas.width + 50) ||
+            (this.velocity.x < 0 && this.topLeftX + this.width < -50) ||
+            (this.velocity.y > 0 && this.topLeftY > canvas.height + 50) ||
+            (this.velocity.y < 0 && this.topLeftY + this.height < -50)) this.outOfPlay = true
     }
 }
 
 class Goodie {
-    constructor(centerX, centerY, velocity, img) {
+    constructor(centerX, centerY, velocity, goodie) {
         this.centerX = centerX
-        this.centerY = centerY
-        this.size = 46
-        this.topLeftX = this.centerX - (this.size / 2)
-        this.topLeftY = this.centerY - (this.size / 2)        
+        this.centerY = centerY        
         this.velocity = velocity
-        this.img = img
+        this.height = goodie.height
+        this.width = goodie.width
+        this.img = goodie.image
+
+        this.topLeftX = this.centerX - (this.width / 2)
+        this.topLeftY = this.centerY - (this.height / 2)        
         this.shrink = 0
+        this.outOfPlay = false
+
+        this.shrinkX = this.width < this.height ? 1 : this.height / this.width
+        this.shrinkY = this.width < this.height ? this.height / this.width : 1  
     }
 
     draw() {
-            c.drawImage(this.img, this.centerX, this.centerY, this.size, this.size);  
+            c.drawImage(this.img, this.centerX, this.centerY, this.width, this.height);  
     }
 
     startShrink(shrinkFactor = 2)     {
@@ -298,12 +304,39 @@ class Goodie {
         this.draw()
         this.centerX += this.velocity.x
         this.centerY += this.velocity.y
-        this.topLeftX = this.centerX - (this.size / 2)
-        this.topLeftY = this.centerY - (this.size / 2)        
+        this.topLeftX = this.centerX - (this.width / 2)
+        this.topLeftY = this.centerY - (this.height / 2)        
 
-        if (this.size > 0 && this.shrink > 0) {
-            this.size -= this.shrink
-        }        
+        if ((this.width > 0 || this.height > 0) && this.shrink > 0) {
+            this.width -= (this.shrink * this.shrinkX)
+            this.height -= (this.shrink * this.shrinkY)
+        }  
+        
+        if ((this.velocity.x > 0 && this.topLeftX > canvas.width + 50) ||
+            (this.velocity.x < 0 && this.topLeftX + this.width < -50) ||
+            (this.velocity.y > 0 && this.topLeftY > canvas.height + 50) ||
+            (this.velocity.y < 0 && this.topLeftY + this.height < -50)) this.outOfPlay = true
+    }
+
+    between(n,x,y) {return n >= x && n <= y;}
+
+    detectCollision(x, y, w, h) {
+        let otherTop = y - (h / 2)
+        let otherBottom = y + (h / 2)
+        let otherLeft = x - (w / 2)
+        let otherRight = x + (w / 2)
+        
+        let thisTop = this.topLeftY
+        let thisBottom = this.topLeftY + this.height
+        let thisLeft = this.topLeftX
+        let thisRight = this.topLeftX + this.width
+
+        return ( 
+                    ((this.between(otherTop, thisTop, thisBottom) || this.between(otherBottom,thisTop, thisBottom)) &&
+                    (this.between(otherLeft, thisLeft, thisRight) || this.between(otherRight,thisLeft, thisRight))) ||                    
+                    ((this.between(thisTop, otherTop, otherBottom) || this.between(thisBottom,otherTop, otherBottom)) &&
+                    (this.between(thisLeft, otherLeft, otherRight) || this.between(thisRight,otherLeft, otherRight)))
+                )
     }
 }
 
@@ -336,19 +369,19 @@ function spawnEnemy(){
 
                 switch(enemyType){
                     case 1: 
-                        imgToUse = imgEnemy1;
+                        enemy = enemy1;
                         strength = 1;
-                        speed = 1
+                        speed = 1.5
                     break;
                     case 2:
-                         imgToUse = imgEnemy2;
-                         strength = (Math.floor(Math.random() * 4)) + 1 // 1-3
-                         speed = 1
+                         enemy = enemy2;
+                         strength = 1
+                         speed = 1.5
                     break;
                     case 3: 
-                        imgToUse = imgEnemy3;
+                        enemy = enemy3;
                         strength = 1
-                        speed = 2.5
+                        speed = 1.5
                     break;
                 }
                     
@@ -357,7 +390,7 @@ function spawnEnemy(){
                     y: Math.sin(angle) * speed 
                 }
             
-                enemies.push(new Enemy(x, y, velocity, strength, imgToUse))
+                enemies.push(new Enemy(x, y, velocity, strength, enemy))
             }
     
         }, 1000);
@@ -366,7 +399,7 @@ function spawnEnemy(){
 function spawnGoodie(){
 
     setInterval(() => {
-        if (goodies.length  < 6) {
+        if (goodies.length  < 2) {
 
             const radius = 23
             let x 
@@ -386,48 +419,31 @@ function spawnGoodie(){
             let speed 
             let imgToUse
     
-            let goodieType = (Math.floor(Math.random() * 6)) + 1;
+            let goodieType = (Math.floor(Math.random() * 3)) + 1;
 
             switch(goodieType){
                 case 1: 
-                    imgToUse = imgGoodie1;
+                    goodie = goodie1;
                     speed = 1
                 break;
                 case 2:
-                     imgToUse = imgGoodie3;
-                     speed = 1
+                    goodie = goodie2;
+                    speed = 1
                 break;
                 case 3: 
-                    imgToUse = imgGoodie4;
+                    goodie = goodie3;
                     speed = 1
                 break;
-                case 4: 
-                    imgToUse = imgGoodie5;
-                    speed = 1
-                break;
-                case 5: 
-                    imgToUse = imgGoodie6;
-                    speed = 1
-                break;
-                case 6: 
-                    imgToUse = imgGoodie7;
-                    speed = 1
-                break;
-
             }
                 
             const velocity = {
                 x: Math.cos(angle) * speed,
                 y: Math.sin(angle) * speed 
             }
-        
-            var goodieSound = new sound("./Goodie.mp3")
-            goodieSound.play()
-            goodies.push(new Goodie(x, y, velocity, imgToUse))
-
+            goodies.push(new Goodie(x, y, velocity, goodie))
         }
 
-    }, 1000);
+    }, 5000);
 }
 
 const projectiles = []
@@ -462,14 +478,17 @@ function animate() {
     projectiles.forEach((projectile, projectileIndex) => {
         projectile.update();
 
-        if (projectile.x - projectile.radius < 0  || 
-            projectiles.x + projectiles.radius > canvas.width || 
-            projectile.y - projectile.radius < 0  || 
-            projectiles.y + projectiles.radius > canvas.height ) {
+        if (projectile.outOfPlay) {
             setTimeout(() => {
                 projectiles.splice(projectileIndex, 1)
             }, 0);            
         }
+
+        // if (projectile.x - projectile.radius < 0  || 
+        //     projectiles.x + projectiles.radius > canvas.width || 
+        //     projectile.y - projectile.radius < 0  || 
+        //     projectiles.y + projectiles.radius > canvas.height ) {
+        // }
     })
 
     animateEnemies()
@@ -482,16 +501,15 @@ function animateEnemies() {
         enemy.update();
 
         // Enemy moved out of Play Area
-        if (enemy.canBeDeleted)
+        if (enemy.outOfPlay)
         setTimeout(() => {
             enemies.splice(enemyIndex, 1)
         }, 0);
 
         // End Game
-        if (enemy.detectCollision(player.centerX, player.centerY, player.size)  ) {
-
+        if (enemy.detectCollision(player.centerX, player.centerY, player.width, player.height)  ) {
             if (!endGame) {
-                explosionSound  = new sound("./Explosion2.mp3")
+                explosionSound  = new sound(playerExplosionSound)
                 explosionSound.play()
                 createExplosion(player.centerX, player.centerY,'red', 50)  
                 player.startShrink(5)
@@ -509,7 +527,7 @@ function animateEnemies() {
         // Enemy Hit
         projectiles.forEach((projectile, projectileIndex) => {
 
-            if (enemy.detectCollision(projectile.x, projectile.y, projectile.radius)) {
+            if (enemy.detectCollision(projectile.x, projectile.y, projectile.radius, projectile.radius)) {
                 enemy.strength--
                 setTimeout(() => {
                     projectiles.splice(projectileIndex, 1)
@@ -518,15 +536,17 @@ function animateEnemies() {
                 if(enemy.strength <= 0) {
                     score+=100    
                     scoreElement.innerHTML = score
-
-                    var explosionSound = new sound("./Explosion1.mp3")
+                    enemy.startShrink()
+                    var explosionSound = new sound(enemyExplosionSound)
                     explosionSound.play()
                     createExplosion(projectile.x, projectile.y,'white', 10)
         
-                    setTimeout(() => {
-                        enemies.splice(enemyIndex, 1)
-                        projectiles.splice(projectileIndex, 1)
-                    }, 0);
+                    if (enemy.width <= 0 && enemy.height <= 0) {
+                        setTimeout(() => {
+                            enemies.splice(enemyIndex, 1)
+                            projectiles.splice(projectileIndex, 1)
+                        }, 0);
+                    }
                 }
             }
         })
@@ -538,15 +558,19 @@ function animateGoodies() {
     goodies.forEach((goodie, goodieIndex) => {
         goodie.update();
 
-        const dist = Math.hypot(player.centerX - goodie.centerX, player.centerY - goodie.centerY)
+        // Goodie moved out of Play Area
+        if (goodie.outOfPlay)
+        setTimeout(() => {
+            goodies.splice(goodieIndex, 1)
+        }, 0);
 
-        // Goodie in Trolley
-        if (player.detectCollision(goodie.centerX, goodie.centerY))
+        // Goodie in Basket
+        if (goodie.detectCollision(player.centerX, player.centerY, player.width, player.height))
         {
-            var addToTrolleySound = new sound("./AddToTrolley.mp3")
+            var addToTrolleySound = new sound(addToBasketSound)
             addToTrolleySound.play()
             goodie.startShrink()
-            if (goodie.size <= 0) {
+            if (goodie.width <= 0 && goodie.height <= 0) {
                 setTimeout(() => {
                     goodies.splice(goodieIndex, 1)
                     score+=100    
@@ -554,31 +578,6 @@ function animateGoodies() {
                 }, 0);
             }
         }
-
-        // Goodie Hit - Game Over
-        // projectiles.forEach((projectile, projectileIndex) => {
-        //     const dist = Math.hypot(projectile.x - goodie.x, projectile.y - goodie.y)
-        //     if (dist - goodie.radius - projectile.radius < 1) {                
-        //         setTimeout(() => {
-        //             projectiles.splice(projectileIndex, 1)
-        //         }, 0);
-
-        //         createExplosion(projectile.x, projectile.y, 'green', 10)
-        //         if (!endGame) {
-        //             createExplosion(player.x, player.y,'red', 50)  
-        //             skrink = 5          
-        //             endGameModal.style.display = 'flex'
-        //             finalScore.innerHTML = score
-        //         }
-    
-        //         endGame = true
-
-        //         setTimeout(() => {
-        //             goodies.splice(goodieIndex, 1)
-        //             projectiles.splice(projectileIndex, 1)
-        //         }, 0);
-        //     }
-        // })
     });
 }
 
@@ -604,23 +603,34 @@ const y = canvas.height / 2;
 
 let velocity = {x:1, y:0}
 
-const player = new Player(x, y, velocity, 100)
+const player = new Player(x, y, velocity, playerSettings)
 player.update()
 
 c.drawImage(imgBackground,0,0)
 
+let inPlay = false
+
 addEventListener('click', (event) => {
 
-    if (endGame) return
-
+    // Make sure the game start click does not fire off a shot
+    if (!inPlay) {
+        inPlay = true
+        return
+    }
+    
     const angle = Math.atan2(event.clientY - player.centerY, event.clientX - player.centerX)
 
     const velocity = {
-        x: Math.cos(angle) * 5,
-        y: Math.sin(angle) * 5
+        x: (Math.cos(angle) * 5) ,
+        y: (Math.sin(angle) * 5)
     }
 
-    var fireSound = new sound("./Fire2.mp3")
+    // Take into account the players speed, and increate the speed of the projectile
+    velocity.x = (Math.abs(velocity.x) + Math.abs(player.velocity.x)) * (velocity.x < 0 ? -1 : 1)
+    velocity.y = (Math.abs(velocity.y) + Math.abs(player.velocity.y)) * (velocity.y < 0 ? -1 : 1)
+
+
+    var fireSound = new sound(playerFireSound)
     fireSound.play()
 
     projectiles.push(new Projectile(
@@ -633,7 +643,7 @@ addEventListener('click', (event) => {
 
 startGameBtn.addEventListener('click', () => {
     endGame = false
-    music = new sound("./music.mp3", true);    
+    music = new sound(backgroundMusicSound, true);    
     music.play()  
     animate()
     spawnEnemy()
