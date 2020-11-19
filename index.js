@@ -59,6 +59,7 @@ canvas.height = innerHeight
 
 let music;
 
+startGameModal.style.display = 'none';
 endGameModal.style.display = 'none';
 
 class Player {
@@ -575,11 +576,12 @@ function animateGoodies() {
             goodie.startShrink()
             if (goodie.width <= 0 && goodie.height <= 0) {
                 setTimeout(() => {
-                    goodies.splice(goodieIndex, 1)
-                    score += 1   
-                    scoreElement.innerHTML = score
-                }, 0);
+                    goodies.splice(goodieIndex, 1)                    
+                }, 0);                
             }
+            score += 1   
+            scoreElement.innerHTML = score
+            
             if(score>= 5)
             {
                 endGame(true)
@@ -645,7 +647,8 @@ restartGameBtn.addEventListener('click', () => {
 
     // Main Start
     const player = new Player(0, 0, {x:1, y:0}, playerSettings)
-    c.drawImage(imgBackground,0,0)
+    c.drawImage(imgBackground,0,0,canvas.width,canvas.height)
+    startGameModal.style.display = 'flex'
 
 function startGame(){
     console.log('startGame')
@@ -664,11 +667,8 @@ function startGame(){
     spawnGoodie();
     startGameModal.style.display = 'none';
     endGameModal.style.display = 'none';
-
     
     player.update()
-   
-    c.drawImage(imgBackground,0,0)
 }
 
 function endGame(success){
