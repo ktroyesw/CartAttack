@@ -522,7 +522,7 @@ function animate() {
     animateEnemies()
     animateGoodies()
 
-    if(score>= 5)
+    if(score>= 3)
             {
                 endGame(true)
             }
@@ -542,6 +542,7 @@ function animateEnemies() {
         // End Game
         if (enemy.detectCollision(player.centerX, player.centerY, player.width, player.height)  ) {
                 explosionSound  = new sound(playerExplosionSound)
+                explosionSound.volume = 0.2
                 explosionSound.play()
                 createExplosion(player.centerX, player.centerY,'red', 50)  
                 player.startShrink(5)
@@ -559,6 +560,7 @@ function animateEnemies() {
                 if(enemy.strength <= 0) {
                     enemy.startShrink()
                     var explosionSound = new sound(enemyExplosionSound)
+                    explosionSound.volume = 0.2
                     explosionSound.play()
                     createExplosion(projectile.x, projectile.y,'white', 10)
         
@@ -589,6 +591,7 @@ function animateGoodies() {
         if (goodie.detectCollision(player.centerX, player.centerY, player.width, player.height))
         {
             var addToTrolleySound = new sound(addToBasketSound)
+            addToBasketSound.volume = 0.2
             addToTrolleySound.play()
                         
             goodie.startShrink()
@@ -674,7 +677,8 @@ function startGame(){
     
     player.init(0, 0, {x:1, y:0}, playerSettings)
 
-    music = new sound("./music.mp3", true);    
+    music = new sound("./music.mp3", true);  
+    music.volume = 0.2  
     music.play();  
     animate();
     spawnEnemy();
@@ -714,6 +718,7 @@ addEventListener('keydown', (e) => {
 
 function sound(src, loop = false) {
     this.sound = document.createElement("audio");
+    this.sound.volume = 0.1
     this.sound.src = src;
     this.sound.setAttribute("preload", "auto");
     this.sound.setAttribute("controls", "none");
