@@ -19,7 +19,7 @@ const backgroundMusicSound = "./music.mp3" // Background Music
 // Player Setup
 const imgPlayer = new Image()
 imgPlayer.src = 'Basket3.png'
-const playerSettings = {image:imgPlayer, width:100, height:100}
+const playerSettings = {image:imgPlayer, width:50, height:50}
 
 
 // Enemy Setup
@@ -32,9 +32,9 @@ imgEnemy2.src = 'Monster02.png'
 const imgEnemy3 = new Image()
 imgEnemy3.src = 'Monster03.png'
 
-const enemy1 = { image:imgEnemy1, width:50, height:50 }
-const enemy2 = { image:imgEnemy2, width:50, height:50 } 
-const enemy3 = { image:imgEnemy3, width:50, height:50 }
+const enemy1 = { image:imgEnemy1, width:25, height:25 }
+const enemy2 = { image:imgEnemy2, width:25, height:25 } 
+const enemy3 = { image:imgEnemy3, width:25, height:25 }
 
 
 // Goodie Setup
@@ -48,9 +48,9 @@ const imgGoodie3 = new Image()
 imgGoodie3.src = 'TarteStaySpray.png'
 
 
-const goodie1 = { image:imgGoodie1, width:50, height:150 }
-const goodie2 = { image:imgGoodie2, width:80, height:80 }
-const goodie3 = { image:imgGoodie3, width:40, height:150 }
+const goodie1 = { image:imgGoodie1, width:25, height:75 }
+const goodie2 = { image:imgGoodie2, width:40, height:40 }
+const goodie3 = { image:imgGoodie3, width:20, height:75 }
 
 canvas.width = innerWidth
 canvas.height = innerHeight
