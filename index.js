@@ -672,12 +672,16 @@ function startGame(){
 function endGame(success){
     cancelAnimationFrame(animationId)    
     endGameModal.style.display = 'flex'
-    finalScore.innerHTML = score
+    finalScore.innerHTML = score + ' items collected.'
     if(success)
-      messageText.innerHTML = "CONGRATULATIONS! You have earned a 10% discount for your next purchase! Promo code: WIN2020"
+    {
+      messageText.innerHTML = "CONGRATULATIONS! You have earned a 10% discount for your next purchase! Promo code: BEATUIFULCODE"
+      document.getElementById("winPanel").style.display = 'flex'
+    }
     else
     {
       messageText.innerHTML = "Sorry, you did not win this time!"
+      document.getElementById("winPanel").style.display = 'none'
     }
 }
 
