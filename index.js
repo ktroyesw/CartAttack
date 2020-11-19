@@ -711,6 +711,13 @@ addEventListener('keydown', (e) => {
     if (e.keyCode && e.keyCode == 39) {player.setVelocity(1, 0) }
     if (e.keyCode && e.keyCode == 38) {player.setVelocity(0, -1) }
     if (e.keyCode && e.keyCode == 40) {player.setVelocity(0, 1) }
+    
+    const keys = [32, 33, 34, 35, 36, 37, 38, 39, 40, 44];
+
+    if (keys.indexOf(e.keyCode) > -1) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
 })
 
 
