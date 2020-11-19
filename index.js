@@ -557,6 +557,7 @@ function animateEnemies() {
                 }, 0);
 
                 if(enemy.strength <= 0) {
+                    enemy.startShrink()
                     var explosionSound = new sound(enemyExplosionSound)
                     explosionSound.play()
                     createExplosion(projectile.x, projectile.y,'white', 10)
